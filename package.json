@@ -1,12 +1,16 @@
 {
   "name": "@gogogadgetbytes/planka-mcp",
   "version": "1.0.0",
+  "mcpName": "io.github.gogogadgetbytes/planka",
   "description": "MCP server for PLANKA kanban boards",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "planka-mcp": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -18,6 +22,8 @@
   },
   "keywords": [
     "mcp",
+    "mcp-server",
+    "model-context-protocol",
     "planka",
     "kanban",
     "claude",

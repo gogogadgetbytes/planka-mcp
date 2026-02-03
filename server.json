@@ -1,0 +1,43 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.gogogadgetbytes/planka",
+  "description": "MCP server for PLANKA kanban boards. Full CRUD for cards, tasks, comments, labels, and lists. PLANKA 2.0 compatible with JWT authentication.",
+  "repository": {
+    "url": "https://github.com/gogogadgetbytes/planka-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@gogogadgetbytes/planka-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "PLANKA_BASE_URL",
+          "description": "PLANKA server URL (e.g., https://planka.example.com)",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "PLANKA_AGENT_EMAIL",
+          "description": "Email/username for PLANKA authentication",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "PLANKA_AGENT_PASSWORD",
+          "description": "Password for PLANKA authentication",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

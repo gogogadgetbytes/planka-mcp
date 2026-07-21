@@ -87,6 +87,13 @@ export const CardIncludedSchema = z
   })
   .passthrough();
 
+// Included entities schema for the card-comments endpoint
+export const CommentsIncludedSchema = z
+  .object({
+    users: z.array(UserSchema).optional(),
+  })
+  .passthrough();
+
 // Projects response includes boards
 export const ProjectsIncludedSchema = z
   .object({

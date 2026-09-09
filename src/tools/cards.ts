@@ -167,6 +167,7 @@ export const getCardTool = {
         comments: details.comments.map((c) => ({
           id: c.id,
           text: c.text,
+          author: c.authorName,
           createdAt: c.createdAt,
         })),
         labels: details.cardLabels.map((cl) => {

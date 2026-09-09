@@ -99,6 +99,7 @@ export const getCommentsTool = {
                 comments: comments.map((c) => ({
                   id: c.id,
                   text: c.text,
+                  author: c.authorName,
                   createdAt: c.createdAt,
                 })),
               },

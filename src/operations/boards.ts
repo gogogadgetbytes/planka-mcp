@@ -12,6 +12,55 @@ import {
   Task,
 } from "../schemas/entities.js";
 import { BoardResponse, BoardIncludedSchema } from "../schemas/responses.js";
+import {
+  CreateBoardSchema,
+  UpdateBoardSchema,
+  CreateBoardInput,
+  UpdateBoardInput,
+} from "../schemas/requests.js";
+
+/**
+ * Create a new board in a project.
+ */
+export async function createBoard(input: CreateBoardInput): Promise<Board> {
+  const validated = CreateBoardSchema.parse(input);
+
+  const response = await plankaClient.post<unknown>(
+    `/api/projects/${validated.projectId}/boards`,
+    {
+      name: validated.name,
+      position: validated.position,
+    }
+  );
+
+  const parsed = BoardResponse.parse(response);
+  return parsed.item;
+}
+
+/**
+ * Update a board's properties.
+ */
+export async function updateBoard(
+  boardId: string,
+  input: UpdateBoardInput
+): Promise<Board> {
+  const validated = UpdateBoardSchema.parse(input);
+
+  const response = await plankaClient.patch<unknown>(
+    `/api/boards/${boardId}`,
+    validated
+  );
+
+  const parsed = BoardResponse.parse(response);
+  return parsed.item;
+}
+
+/**
+ * Delete a board.
+ */
+export async function deleteBoard(boardId: string): Promise<void> {
+  await plankaClient.delete(`/api/boards/${boardId}`);
+}
 
 /**
  * Full board details with all included entities.

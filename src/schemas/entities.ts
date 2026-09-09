@@ -8,6 +8,10 @@ import { z } from "zod";
 export const CardTypeSchema = z.enum(["project", "story"]);
 export type CardType = z.infer<typeof CardTypeSchema>;
 
+// List type enum - required for PLANKA 2.0
+export const ListTypeSchema = z.enum(["active", "closed"]);
+export type ListType = z.infer<typeof ListTypeSchema>;
+
 // Label colors - all valid PLANKA 2.0 colors
 export const LabelColorSchema = z.enum([
   "berry-red",
@@ -129,11 +133,17 @@ export const TaskSchema = z.object({
 export type Task = z.infer<typeof TaskSchema>;
 
 // Label schema
+// Note: `color` is intentionally typed as `z.string()` rather than
+// `LabelColorSchema` here. Read paths (e.g. planka_get_board) must accept
+// any color value the Planka backend returns, since the set of supported
+// colors evolves between Planka releases. Strict enum validation is kept
+// only on write paths (see schemas/requests.ts and tools/labels.ts), where
+// rejecting unknown colors is appropriate.
 export const LabelSchema = z.object({
   id: z.string(),
   boardId: z.string(),
   name: z.string().nullable(),
-  color: LabelColorSchema,
+  color: z.string(),
   position: z.number(),
   createdAt: z.string(),
   updatedAt: z.string().nullable().optional(),

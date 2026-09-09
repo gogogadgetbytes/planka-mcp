@@ -12,6 +12,7 @@ import {
   MoveCardInput,
 } from "../schemas/requests.js";
 import { CardResponse, CardIncludedSchema } from "../schemas/responses.js";
+import { getCommentsForCard, CommentWithAuthor } from "./comments.js";
 
 /**
  * Card details with all related entities.
@@ -20,7 +21,7 @@ export interface CardDetails {
   card: Card;
   taskLists: TaskList[];
   tasks: Task[];
-  comments: Comment[];
+  comments: CommentWithAuthor[];
   labels: Label[];
   cardLabels: CardLabel[];
   attachments: Attachment[];
@@ -51,7 +52,13 @@ export async function createCard(input: CreateCardInput): Promise<Card> {
  * Get a card by ID with all related entities.
  */
 export async function getCard(cardId: string): Promise<CardDetails> {
-  const response = await plankaClient.get<unknown>(`/api/cards/${cardId}`);
+  // PLANKA 2.x doesn't include comments in the card response; fetch them
+  // from their own endpoint alongside. Fall back to `included` (pre-2.x)
+  // if that endpoint fails.
+  const [response, fetchedComments] = await Promise.all([
+    plankaClient.get<unknown>(`/api/cards/${cardId}`),
+    getCommentsForCard(cardId).catch(() => null),
+  ]);
   const parsed = CardResponse.parse(response);
   const included = CardIncludedSchema.parse(
     (response as Record<string, unknown>).included || {}
@@ -61,9 +68,11 @@ export async function getCard(cardId: string): Promise<CardDetails> {
     card: parsed.item,
     taskLists: (included.taskLists || []).sort((a, b) => a.position - b.position),
     tasks: (included.tasks || []).sort((a, b) => a.position - b.position),
-    comments: (included.comments || []).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    ),
+    comments:
+      fetchedComments ??
+      (included.comments || []).sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ),
     labels: included.labels || [],
     cardLabels: included.cardLabels || [],
     attachments: included.attachments || [],

@@ -22,6 +22,7 @@ export async function createList(input: CreateListInput): Promise<List> {
     {
       name: validated.name,
       position: validated.position,
+      type: validated.type,
     }
   );
 

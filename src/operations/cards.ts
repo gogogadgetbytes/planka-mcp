@@ -12,6 +12,7 @@ import {
   MoveCardInput,
 } from "../schemas/requests.js";
 import { CardResponse, CardIncludedSchema } from "../schemas/responses.js";
+import { getCommentsForCard } from "./comments.js";
 
 /**
  * Card details with all related entities.
@@ -57,13 +58,16 @@ export async function getCard(cardId: string): Promise<CardDetails> {
     (response as Record<string, unknown>).included || {}
   );
 
+  // PLANKA 2.x does not include comments in the card detail response
+  // (the card only carries a commentsTotal counter): fetch them from
+  // their dedicated endpoint.
+  const comments = await getCommentsForCard(cardId);
+
   return {
     card: parsed.item,
     taskLists: (included.taskLists || []).sort((a, b) => a.position - b.position),
     tasks: (included.tasks || []).sort((a, b) => a.position - b.position),
-    comments: (included.comments || []).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    ),
+    comments,
     labels: included.labels || [],
     cardLabels: included.cardLabels || [],
     attachments: included.attachments || [],
